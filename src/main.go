@@ -5,13 +5,13 @@ import (
 )
 
 func main() {
+
     app := fiber.New();
 
-    app.Post("/image", func(c *fiber.Ctx) error {
+    app.Post("/register", register);
+    app.Post("/image", saveImage);
 
-        return saveImage(c.FormValue("name"), c.FormValue("image"));
 
-    });
 
     app.Listen(":3000");
 }
