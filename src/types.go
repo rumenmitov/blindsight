@@ -8,6 +8,14 @@ type DB_Config struct {
     db_name string;
 };
 
+type User struct {
+    Fname string    `json:"fname"`;
+    Lname string    `json:"lname"`;
+    Email string    `json:"email"`;
+    Username string `json:"username"`;
+    Password string `json:"password"`;
+}
+
 type ImageFile struct {
     name string;
     bytes string;

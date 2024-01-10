@@ -9,6 +9,7 @@ func main() {
     app := fiber.New();
 
     app.Post("/register", register);
+    app.Post("/login", login);
     app.Post("/image", saveImage);
 
 

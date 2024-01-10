@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"os"
+
 	"github.com/gofiber/fiber/v2"
-    "golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func register(c *fiber.Ctx) error {
@@ -24,8 +26,8 @@ func register(c *fiber.Ctx) error {
         return err;
     }
 
-    register_user := `insert into "Users"("fname", "lname", "email", "username", "password") 
-        values($2, $3, $4, $5, $6)`;
+    register_user := `INSERT INTO "Users"("fname", "lname", "email", "username", "password") 
+        VALUES($2, $3, $4, $5, $6)`;
 
     _, err = db.Exec(register_user, 
         c.FormValue("fname"),
@@ -40,6 +42,50 @@ func register(c *fiber.Ctx) error {
 
     return nil;
 }
+
+func login(c *fiber.Ctx) error {
+
+    db, err := configureDatabase();
+    if err != nil {
+        return err;
+    }
+
+    defer db.Close();
+
+    results, err := db.Query(`SELECT DISTINCT * FROM "Users"
+                              WHERE username = ` + c.FormValue("username") +
+                              `OR email = ` + c.FormValue("username"));
+
+    if err != nil {
+        return err;
+    }
+
+    for results.Next() {
+        var user User;
+
+        if err := results.Scan(&user.Fname, &user.Lname, &user.Email, 
+            &user.Username, &user.Password); err != nil {
+
+                return err;
+        }
+
+        password_match := bcrypt.CompareHashAndPassword(
+            []byte(user.Password), 
+            []byte(c.FormValue("password")));
+
+        // checks if no errors ocurred i.e. passwords match
+        if password_match == nil {
+            user_data, err := json.Marshal(user);
+            if err != nil { return err }
+
+            return c.SendString(string(user_data));
+        }
+
+    }
+
+    return nil;
+}
+
 
 func saveImage(c *fiber.Ctx) error {
     image := ImageFile {
