@@ -1,15 +1,11 @@
-FROM golang:latest
+FROM docker.io/library/golang
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-
-RUN go mod download
-
 COPY . .
 
-RUN go build -o main ./src/*
+RUN go get ./src
 
 EXPOSE 3000
 
-CMD ["./main"]
+CMD ["go", "run", "./src"]

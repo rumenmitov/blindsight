@@ -2,7 +2,7 @@
 ![BlindSight Logo](assets/blindsight_logo.png)
 ## Endpoints
 - `/register` _POST_  
-> Enters user data into the Postgres database **Users**.
+> Enters user data into the Postgres database.
 
 Receives a **multipart/form-data** with the following fields:  
 -- `fname` _string_  

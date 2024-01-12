@@ -5,19 +5,27 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+    "database/sql"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func register(c *fiber.Ctx) error {
+func register(c *fiber.Ctx, db *sql.DB) error {
 
-    db, err := configureDatabase();
+    create_db_if_none_exist := `CREATE TABLE IF NOT EXISTS "Users"(
+        "id" SERIAL PRIMARY KEY,
+        "fname" VARCHAR(100) NOT NULL,
+        "lname" VARCHAR(100) NOT NULL,
+        "email" VARCHAR(100) UNIQUE NOT NULL,
+        "username" VARCHAR(100) UNIQUE NOT NULL,
+        "password" VARCHAR(100) NOT NULL
+    )`;
+
+    _, err := db.Exec(create_db_if_none_exist);
     if err != nil {
         return err;
     }
-
-    defer db.Close();
 
     hashed_pass, err := 
         bcrypt.GenerateFromPassword([]byte(c.FormValue("password")), bcrypt.DefaultCost);
@@ -27,7 +35,7 @@ func register(c *fiber.Ctx) error {
     }
 
     register_user := `INSERT INTO "Users"("fname", "lname", "email", "username", "password") 
-        VALUES($2, $3, $4, $5, $6)`;
+        VALUES($1, $2, $3, $4, $5)`;
 
     _, err = db.Exec(register_user, 
         c.FormValue("fname"),
@@ -43,7 +51,7 @@ func register(c *fiber.Ctx) error {
     return nil;
 }
 
-func login(c *fiber.Ctx) error {
+func login(c *fiber.Ctx, db *sql.DB) error {
 
     db, err := configureDatabase();
     if err != nil {

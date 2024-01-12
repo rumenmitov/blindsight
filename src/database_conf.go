@@ -7,6 +7,7 @@ import (
     "errors"
 
 	"github.com/joho/godotenv"
+    _ "github.com/lib/pq"
 )
 
 func configureDatabase() (*sql.DB, error) {
@@ -19,7 +20,7 @@ func configureDatabase() (*sql.DB, error) {
         port: 5432,
         user: os.Getenv("DB_USER"),
         password: os.Getenv("DB_PASS"),
-        db_name: "Users",
+        db_name: os.Getenv("DB_NAME"),
     };
 
     psqlconn := 

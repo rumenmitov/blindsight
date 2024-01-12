@@ -1,0 +1,28 @@
+services:
+    server:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: "blindsight"
+      ports: 
+        - 3000:3000
+      volumes:
+        - .:/app
+      depends_on:
+        - psql
+
+    psql:
+      image: 'docker.io/library/postgres'
+      containter_name: "blindsight_psql"
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_HOST: ${DB_HOST}
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASS}
+        POSTGRES_DB: ${DB_NAME}
+      volumes:
+        - data:/data
+
+volumes:
+  data:
