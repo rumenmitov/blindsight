@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN go get ./src
+RUN go install ./src
+
+ENTRYPOINT /go/bin/src
 
 EXPOSE 3000
-
-CMD ["go", "run", "./src"]
