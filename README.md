@@ -2,7 +2,7 @@
 ![BlindSight Logo](assets/blindsight_logo.png)
 ## Endpoints
 - `/register` _POST_  
-> Enters user data into the Postgres database.
+> Enters user data into the Postgres database and sends verification email to user.
 
 Receives a **multipart/form-data** with the following fields:  
 -- `fname` _string_  
@@ -10,6 +10,12 @@ Receives a **multipart/form-data** with the following fields:
 -- `email` _string_  
 -- `username` _string_  
 -- `password` _string_  
+  
+***
+- `/verify/:user_id` _GET_
+> Marks user as 'verified' in the database.
+  
+Receives the `user_id` through the URL.  
   
 ***
 - `/login` _POST_

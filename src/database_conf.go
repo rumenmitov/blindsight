@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
     "errors"
+    "strconv"
 
 	"github.com/joho/godotenv"
     _ "github.com/lib/pq"
@@ -15,9 +16,14 @@ func configureDatabase() (*sql.DB, error) {
         return nil, err;
     }
 
+    db_port, err := strconv.Atoi(os.Getenv("DB_PORT"));
+    if err != nil {
+        return nil, err;
+    }
+
     db_config := DB_Config {
-        host: "localhost",
-        port: 5432,
+        host: os.Getenv("DB_HOST"),
+        port: uint16(db_port),
         user: os.Getenv("DB_USER"),
         password: os.Getenv("DB_PASS"),
         db_name: os.Getenv("DB_NAME"),

@@ -5,11 +5,16 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB;
 
 func main() {
+
+    if err := godotenv.Load(); err != nil {
+        os.Stderr.WriteString(err.Error());
+    }
     
     db, err := configureDatabase();
     if err != nil {
@@ -29,6 +34,10 @@ func main() {
         return register(c, db);
     });
 
+    app.Get("/verify/:user_id", func(c *fiber.Ctx) error {
+        return verify(c, db);
+    })
+
     app.Post("/login", func(c *fiber.Ctx) error {
         return login(c, db);
     });
@@ -38,7 +47,6 @@ func main() {
     });
 
 
-
-    app.Listen(":3000");
+    app.Listen(":" + os.Getenv("SERVER_PORT"));
 }
 
