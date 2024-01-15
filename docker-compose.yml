@@ -13,7 +13,7 @@ services:
 
     psql:
       image: 'docker.io/library/postgres'
-      containter_name: "blindsight_psql"
+      container_name: "blindsight_psql"
       ports:
         - 5432:5432
       environment:
@@ -25,4 +25,4 @@ services:
         - data:/data
 
 volumes:
-  data:
+    data:

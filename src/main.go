@@ -30,6 +30,10 @@ func main() {
 
     app := fiber.New();
 
+    app.Get("/ping", func(c *fiber.Ctx) error {
+        return c.SendString("pong");
+    });
+
     app.Post("/register", func(c *fiber.Ctx) error {
         return register(c, db);
     });

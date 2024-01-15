@@ -31,6 +31,8 @@ func register(c *fiber.Ctx, db *sql.DB) error {
         return err;
     }
 
+    fmt.Println("db created")
+
     hashed_pass, err := 
         bcrypt.GenerateFromPassword([]byte(c.FormValue("password")), bcrypt.DefaultCost);
 
@@ -48,6 +50,8 @@ func register(c *fiber.Ctx, db *sql.DB) error {
     c.FormValue("username"),
     string(hashed_pass),
     false );
+
+    fmt.Println("user added")
 
     var id uint;
     if err = row.Scan(&id); err != nil {
@@ -78,6 +82,8 @@ func register(c *fiber.Ctx, db *sql.DB) error {
     if err := email_dialer.DialAndSend(verification_mes); err != nil {
         return err;
     }
+
+    fmt.Println("email sent")
 
     return nil;
     
