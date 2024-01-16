@@ -18,7 +18,7 @@ import (
 )
 
 func users(db *sql.DB) ([]byte, error) {
-    get_users := `SELECT "username", "email" FROM "Users"`;
+    get_users := `SELECT "username", "email" FROM "Users" WHERE "verified" = true`;
 
     results, err := db.Query(get_users);
     if err != nil {
