@@ -10,19 +10,19 @@ import (
 
 const log_path = "logs";
 
-type Node struct {
+type LogNode struct {
     log string;
-    next *Node;
+    next *LogNode;
 }
 
-type Queue struct {
+type LogQueue struct {
     len int;
-    head *Node;
-    tail *Node;
+    head *LogNode;
+    tail *LogNode;
 }
 
-func enqueue(queue *Queue, mes string) {
-    var newLog *Node = &Node {
+func enqueue_log(queue *LogQueue, mes string) {
+    var newLog *LogNode = &LogNode {
         log: mes,
         next: nil,
     }
@@ -37,9 +37,9 @@ func enqueue(queue *Queue, mes string) {
     queue.len++;
 }
 
-func dequeue(queue *Queue) (string, error) {
+func dequeue_log(queue *LogQueue) (string, error) {
     if queue.len < 1 {
-        return "", errors.New("Queue is empty!\n");
+        return "", errors.New("LogQueue is empty!\n");
     }
 
     var log string = queue.head.log;
@@ -65,7 +65,7 @@ func Log(mes string) {
 
     defer f_in.Close();
 
-    var queue Queue = Queue {
+    var queue LogQueue = LogQueue {
         len: 0,
         head: nil,
         tail: nil,
@@ -73,7 +73,7 @@ func Log(mes string) {
 
     scanner := bufio.NewScanner(f_in);
     for scanner.Scan() {
-        enqueue(&queue, scanner.Text());
+        enqueue_log(&queue, scanner.Text());
     }
 
     f_out, err := os.OpenFile(log_path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm);
@@ -88,7 +88,7 @@ func Log(mes string) {
     f_out.WriteString(message);
 
     for {
-        log, err := dequeue(&queue);
+        log, err := dequeue_log(&queue);
         if err != nil {
             break;
         }

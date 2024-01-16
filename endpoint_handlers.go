@@ -17,6 +17,31 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func users(db *sql.DB) ([]byte, error) {
+    get_users := `SELECT "username", "email" FROM "Users"`;
+
+    results, err := db.Query(get_users);
+    if err != nil {
+        return nil, err;
+    }
+
+    defer results.Close();
+
+    var users []User;
+
+    for results.Next() {
+        var user User;
+
+        if err := results.Scan(&user.Username, &user.Email); err != nil {
+            return nil, err;
+        }
+
+        users = append(users, user);
+    }
+
+    return json.Marshal(users);
+}
+
 func register(c *fiber.Ctx, db *sql.DB) error {
     create_db_if_none_exists := `CREATE TABLE IF NOT EXISTS "Users"(
         "id" SERIAL PRIMARY KEY,

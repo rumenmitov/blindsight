@@ -1,6 +1,14 @@
 # BlindSight Server
 ![BlindSight Logo](assets/blindsight_logo.png)
 ## Endpoints
+- `/ping` _GET_
+> Returns the string 'pong' if successful.
+   
+
+- `/users` _GET_
+> Returns a **JSON of an array containing all usernames and emails**.
+  
+  
 - `/register` _POST_  
 > Enters user data into the Postgres database and sends verification email to user.
 

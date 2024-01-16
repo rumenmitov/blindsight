@@ -34,6 +34,15 @@ func main() {
         return c.SendString("pong");
     });
 
+    app.Get("/users", func(c *fiber.Ctx) error {
+        users, err := users(db);
+        if err != nil {
+            Log(err.Error());
+        }
+
+        return c.SendString(string(users));
+    });
+
     app.Post("/register", func(c *fiber.Ctx) error {
         err := register(c, db);
         if err != nil {

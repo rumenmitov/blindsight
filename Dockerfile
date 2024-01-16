@@ -4,10 +4,10 @@ WORKDIR /app
 
 COPY . .
 
-RUN go test ./src
+RUN go test .
 
-RUN go install ./src
+RUN go install .
 
-ENTRYPOINT /go/bin/src
+ENTRYPOINT /go/bin/blindsight
 
 EXPOSE 3000
