@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -12,23 +13,25 @@ func TestLoggerWithSingleInput(t *testing.T) {
 
     Log(log_1);
 
-    log_file, err := os.Open("../logs");
+    log_file, err := os.Open(log_path);
     if err != nil {
         t.Error("No logging file was created.");
     }
 
     scanner := bufio.NewScanner(log_file);
     for scanner.Scan() {
-        if scanner.Text() != log_1 {
+        log := strings.Split(scanner.Text(), " - ");
+
+        if log[len(log) - 1] != log_1 {
             err := fmt.Sprintf("First log is incorrect! Entry was: %s, logged value was: %s",
-                log_1 + "\n", scanner.Text());
+                log_1 + "\n", log[len(log) - 1]);
             
             t.Error(err);
         }
     }
 
     log_file.Close();
-    if err := os.Remove("../logs"); err != nil {
+    if err := os.Remove(log_path); err != nil {
         os.Stderr.WriteString("Failed to remove test log file!\n");
     }
 }
@@ -43,7 +46,7 @@ func TestLoggerWithMultipleInputs(t *testing.T) {
         i++;
     }
 
-    log_file, err := os.Open("../logs");
+    log_file, err := os.Open(log_path);
     if err != nil {
         t.Error("No logging file was created.");
     }
@@ -52,9 +55,12 @@ func TestLoggerWithMultipleInputs(t *testing.T) {
 
     scanner := bufio.NewScanner(log_file);
     for scanner.Scan() {
-        if scanner.Text() != test_cases[2 - i] {
+
+        log := strings.Split(scanner.Text(), " - ");
+
+        if log[len(log) - 1] != test_cases[2 - i] {
             err := fmt.Sprintf("First log is incorrect! Entry was: %s, logged value was: %s",
-                test_cases[2 - i] + "\n", scanner.Text());
+                test_cases[2 - i] + "\n", log[len(log) - 1]);
             
             t.Error(err);
         }
@@ -63,7 +69,7 @@ func TestLoggerWithMultipleInputs(t *testing.T) {
     }
 
     log_file.Close();
-    if err := os.Remove("../logs"); err != nil {
+    if err := os.Remove(log_path); err != nil {
         os.Stderr.WriteString("Failed to remove test log file!\n");
     }
 }

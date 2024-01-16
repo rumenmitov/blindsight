@@ -22,7 +22,7 @@ func configureDatabase() (*sql.DB, error) {
     }
 
     db_config := DB_Config {
-        host: os.Getenv("DB_HOST"),
+        host: "psql",
         port: uint16(db_port),
         user: os.Getenv("DB_USER"),
         password: os.Getenv("DB_PASS"),

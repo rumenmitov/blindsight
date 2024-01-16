@@ -13,18 +13,18 @@ var db *sql.DB;
 func main() {
 
     if err := godotenv.Load(); err != nil {
-        os.Stderr.WriteString(err.Error());
+        Log(err.Error());
     }
     
     db, err := configureDatabase();
     if err != nil {
-        os.Stderr.WriteString(err.Error());
+        Log(err.Error());
     }
 
     defer db.Close();
 
     if err := db.Ping(); err != nil {
-        os.Stderr.WriteString(err.Error());
+        Log(err.Error());
     }
 
 
@@ -35,15 +35,30 @@ func main() {
     });
 
     app.Post("/register", func(c *fiber.Ctx) error {
-        return register(c, db);
+        err := register(c, db);
+        if err != nil {
+            Log(err.Error());
+        }
+
+        return err;
     });
 
-    app.Get("/verify/:user_id", func(c *fiber.Ctx) error {
-        return verify(c, db);
+    app.Post("/verify", func(c *fiber.Ctx) error {
+        err := verify(c, db);
+        if err != nil {
+            Log(err.Error());
+        }
+
+        return err;
     })
 
     app.Post("/login", func(c *fiber.Ctx) error {
-        return login(c, db);
+        err := login(c, db);
+        if err != nil {
+            Log(err.Error());
+        }
+
+        return err;
     });
 
     app.Post("/image", func(c *fiber.Ctx) error {

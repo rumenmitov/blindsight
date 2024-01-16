@@ -7,8 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crypto/tls"
+	"math/rand"
 
 	"github.com/go-gomail/gomail"
 	"github.com/gofiber/fiber/v2"
@@ -23,6 +25,7 @@ func register(c *fiber.Ctx, db *sql.DB) error {
         "email" VARCHAR(100) UNIQUE NOT NULL,
         "username" VARCHAR(100) UNIQUE NOT NULL,
         "password" VARCHAR(100) NOT NULL,
+        "verification_code" INT,
         "verified" BOOLEAN
     )`;
 
@@ -31,8 +34,6 @@ func register(c *fiber.Ctx, db *sql.DB) error {
         return err;
     }
 
-    fmt.Println("db created")
-
     hashed_pass, err := 
         bcrypt.GenerateFromPassword([]byte(c.FormValue("password")), bcrypt.DefaultCost);
 
@@ -40,26 +41,23 @@ func register(c *fiber.Ctx, db *sql.DB) error {
         return err;
     }
 
-    register_user := `INSERT INTO "Users"("fname", "lname", "email", "username", "password", "verified") 
-        VALUES($1, $2, $3, $4, $5, $6) RETURNING "id"`;
+    verification_code := rand.Intn(999999);
 
-    row := db.QueryRow(register_user, 
+    register_user := `INSERT INTO "Users"("fname", "lname", "email", "username", "password", "verification_code", "verified") 
+        VALUES($1, $2, $3, $4, $5, $6, $7)`;
+
+    _, err = db.Exec(register_user, 
     c.FormValue("fname"),
     c.FormValue("lname"),
     c.FormValue("email"),
     c.FormValue("username"),
     string(hashed_pass),
+    verification_code,
     false );
 
-    fmt.Println("user added")
-
-    var id uint;
-    if err = row.Scan(&id); err != nil {
+    if err != nil {
         return err;
     }
-
-    var verification_link = `http://` + os.Getenv("SERVER_HOST") + `:` + os.Getenv("SERVER_PORT") +
-        `/verify/` + fmt.Sprint(id);
 
     verification_mes := gomail.NewMessage();
     verification_mes.SetHeader("From", os.Getenv("EMAIL_USER"));
@@ -67,7 +65,8 @@ func register(c *fiber.Ctx, db *sql.DB) error {
     verification_mes.SetHeader("Subject", "Verify your Account");
     verification_mes.SetBody("text/html", ` 
         <h1>Welcome to BlindSight, ` + c.FormValue("fname") + ` ` + c.FormValue("lname") +`!</h1>
-        <p>To complete your registration please click <a href="` + verification_link + `">here</a>.</p>
+        <p>To complete your registration, please enter the following code in the BlindSight app:</p>
+        <p><b>` + fmt.Sprint(verification_code) + `</b></p>
         <p>If you do not remember creating an account with BlindSight, please ignore this email.</p>
         <br>
         <p>Sincerely,</p>
@@ -83,19 +82,20 @@ func register(c *fiber.Ctx, db *sql.DB) error {
         return err;
     }
 
-    fmt.Println("email sent")
-
     return nil;
     
 }
 
 func verify(c *fiber.Ctx, db *sql.DB) error {
 
-    verify_user := `UPDATE "Users" SET "verified" = true WHERE "id" = $1`;
+    verify_user := `UPDATE "Users" SET "verified" = true, "verification_code" = NULL WHERE "verification_code" = $1`;
 
-    id := fmt.Sprint(c.Params("user_id"));
+    verification_code, err := strconv.Atoi(c.FormValue("verification_code"));
+    if err != nil {
+        return err;
+    }
 
-    _, err := db.Exec(verify_user, id);
+    _, err = db.Exec(verify_user, verification_code);
     if err != nil {
         return err;
     }
@@ -105,6 +105,7 @@ func verify(c *fiber.Ctx, db *sql.DB) error {
 
 func login(c *fiber.Ctx, db *sql.DB) error {
 
+    // TODO: Add verified condition
     results, err := db.Query(`SELECT DISTINCT 
                               "fname",
                               "lname",

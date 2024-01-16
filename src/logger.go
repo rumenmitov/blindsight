@@ -3,8 +3,12 @@ package main
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"os"
+	"time"
 )
+
+const log_path = "logs";
 
 type Node struct {
     log string;
@@ -54,9 +58,9 @@ func dequeue(queue *Queue) (string, error) {
 }
 
 func Log(mes string) {
-    f_in, err := os.Open("../logs");
+    f_in, err := os.Open(log_path);
     if err != nil {
-        os.Stderr.WriteString("Couldn't open logging file.\n");
+        os.Stderr.WriteString(err.Error());
     }
 
     defer f_in.Close();
@@ -72,14 +76,16 @@ func Log(mes string) {
         enqueue(&queue, scanner.Text());
     }
 
-    f_out, err := os.OpenFile("../logs", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm);
+    f_out, err := os.OpenFile(log_path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm);
     if err != nil {
-       os.Stderr.WriteString("Couldn't open logging file.\n");
+       os.Stderr.WriteString(err.Error());
     }
 
     defer f_out.Close()
 
-    f_out.WriteString(mes + "\n");
+    message := fmt.Sprintf("%s - %s\n", time.Now().Format("2006-01-02 15:04:05"), mes);
+
+    f_out.WriteString(message);
 
     for {
         log, err := dequeue(&queue);

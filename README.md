@@ -12,10 +12,11 @@ Receives a **multipart/form-data** with the following fields:
 -- `password` _string_  
   
 ***
-- `/verify/:user_id` _GET_
+- `/verify` _POST_
 > Marks user as 'verified' in the database.
   
-Receives the `user_id` through the URL.  
+Receives a **multipart/form-data** with the following fields:  
+-- `verification_code` _string_
   
 ***
 - `/login` _POST_
