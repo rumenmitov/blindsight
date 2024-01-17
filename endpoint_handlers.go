@@ -130,7 +130,6 @@ func verify(c *fiber.Ctx, db *sql.DB) error {
 
 func login(c *fiber.Ctx, db *sql.DB) error {
 
-    // TODO: Add verified condition
     results, err := db.Query(`SELECT DISTINCT 
                               "fname",
                               "lname",
@@ -138,8 +137,9 @@ func login(c *fiber.Ctx, db *sql.DB) error {
                               "username",
                               "password"
                               FROM "Users"
-                              WHERE username = ` + c.FormValue("username") +
-                              `OR email = ` + c.FormValue("username"));
+                              WHERE ("username" = ` + c.FormValue("username") +
+                              `OR "email" = ` + c.FormValue("username") + `) AND 
+                              "verified" = true`);
 
     if err != nil {
         return err;
