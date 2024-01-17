@@ -111,21 +111,36 @@ func register(c *fiber.Ctx, db *sql.DB) error {
     
 }
 
-func verify(c *fiber.Ctx, db *sql.DB) error {
+func verify(c *fiber.Ctx, db *sql.DB) ([]byte, AuthError) {
 
-    verify_user := `UPDATE "Users" SET "verified" = true, "verification_code" = NULL WHERE "verification_code" = $1`;
+    verify_user := `UPDATE "Users" SET "verified" = true, "verification_code" = NULL WHERE "verification_code" = $1 RETURNING *`;
 
     verification_code, err := strconv.Atoi(c.FormValue("verification_code"));
     if err != nil {
-        return err;
+        return nil, NotANumberError;
     }
 
-    _, err = db.Exec(verify_user, verification_code);
+    results, err := db.Query(verify_user, verification_code);
     if err != nil {
-        return err;
+        return nil, VerificationError;
     }
 
-    return nil;
+    for results.Next() {
+        var user User;
+
+        results.Scan(&user.Fname, &user.Lname, &user.Email, &user.Username, &user.Password);
+
+        userJSON, err := json.Marshal(user);
+        if err != nil {
+            Log(err.Error())
+            return nil, UnkownError;
+        }
+
+        return userJSON, Ok;
+
+    }
+
+    return nil, DoesNotExistError;
 }
 
 func login(c *fiber.Ctx, db *sql.DB) error {

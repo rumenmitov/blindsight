@@ -9,6 +9,8 @@ import (
 )
 
 func TestLoggerWithSingleInput(t *testing.T) {
+    os.Remove("logs");
+
     var log_1 string = "hello";
 
     Log(log_1);
@@ -37,6 +39,8 @@ func TestLoggerWithSingleInput(t *testing.T) {
 }
 
 func TestLoggerWithMultipleInputs(t *testing.T) {
+    os.Remove("logs");
+
     var test_cases = [3]string{ "test case 1", "test case 2", "test case 3" };
 
     i := 0;

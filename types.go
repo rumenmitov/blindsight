@@ -14,10 +14,19 @@ type User struct {
     Email string    `json:"email"`;
     Username string `json:"username"`;
     Password string `json:"password"`;
-}
+};
 
 type ImageFile struct {
     name string;
     bytes string;
 };
 
+type AuthError uint
+const (
+    Ok AuthError = iota + 201;
+    NotANumberError;
+    VerificationError;
+    DoesNotExistError;
+    WrongCredentialsError;
+    UnkownError;
+)
