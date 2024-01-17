@@ -68,12 +68,17 @@ func main() {
     })
 
     app.Post("/login", func(c *fiber.Ctx) error {
-        err := login(c, db);
-        if err != nil {
-            Log(err.Error());
+        userJSON, err := login(c, db);
+        if AuthError(err) != AuthError(Ok) {
+            Log(fmt.Sprintf("Verification error: %d", AuthError(err)));
+
+            // NOTE: 201 is the status for a CREATED response. 201+ is an error.
+            c.Status(int(AuthError(err)))
+            return nil;
         }
 
-        return err;
+        c.Status(201);
+        return c.SendString(string(userJSON));
     });
 
     app.Post("/image", func(c *fiber.Ctx) error {

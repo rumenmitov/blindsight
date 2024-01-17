@@ -113,16 +113,17 @@ func register(c *fiber.Ctx, db *sql.DB) error {
 
 func verify(c *fiber.Ctx, db *sql.DB) ([]byte, AuthError) {
 
-    verify_user := `UPDATE "Users" SET "verified" = true, "verification_code" = NULL WHERE "verification_code" = $1 RETURNING *`;
+    verify_user := `UPDATE "Users" SET "verified" = true, "verification_code" = NULL WHERE "verification_code" = $1
+                    RETURNING "fname", "lname", "email", "username", "password"`;
 
     verification_code, err := strconv.Atoi(c.FormValue("verification_code"));
     if err != nil {
-        return nil, NotANumberError;
+        return nil, AuthError(NotANumberError);
     }
 
     results, err := db.Query(verify_user, verification_code);
     if err != nil {
-        return nil, VerificationError;
+        return nil, AuthError(WrongCredentialsError);
     }
 
     for results.Next() {
@@ -133,17 +134,18 @@ func verify(c *fiber.Ctx, db *sql.DB) ([]byte, AuthError) {
         userJSON, err := json.Marshal(user);
         if err != nil {
             Log(err.Error())
-            return nil, UnkownError;
+            return nil, AuthError(UnkownError);
         }
 
-        return userJSON, Ok;
+        Log(string(userJSON));
+        return userJSON, AuthError(Ok);
 
     }
 
-    return nil, DoesNotExistError;
+    return nil, AuthError(UnkownError);
 }
 
-func login(c *fiber.Ctx, db *sql.DB) error {
+func login(c *fiber.Ctx, db *sql.DB) ([]byte, AuthError) {
 
     results, err := db.Query(`SELECT DISTINCT 
                               "fname",
@@ -152,12 +154,13 @@ func login(c *fiber.Ctx, db *sql.DB) error {
                               "username",
                               "password"
                               FROM "Users"
-                              WHERE ("username" = ` + c.FormValue("username") +
-                              `OR "email" = ` + c.FormValue("username") + `) AND 
+                              WHERE ("username" = '` + c.FormValue("username") +
+                              `' OR "email" = '` + c.FormValue("username") + `') AND 
                               "verified" = true`);
 
     if err != nil {
-        return err;
+        Log(err.Error());
+        return nil, AuthError(WrongCredentialsError);
     }
 
     for results.Next() {
@@ -166,24 +169,31 @@ func login(c *fiber.Ctx, db *sql.DB) error {
         if err := results.Scan(&user.Fname, &user.Lname, &user.Email, 
             &user.Username, &user.Password); err != nil {
 
-                return err;
+                Log(err.Error());
+                return nil, AuthError(UnkownError);
         }
 
         password_match := bcrypt.CompareHashAndPassword(
             []byte(user.Password), 
             []byte(c.FormValue("password")));
 
-        // checks if no errors ocurred i.e. passwords match
+            // NOTE: Checks if no errors ocurred i.e. passwords match
         if password_match == nil {
             user_data, err := json.Marshal(user);
-            if err != nil { return err }
+            if err != nil { 
+                Log(err.Error());
+                return nil, AuthError(UnkownError);
+            }
 
-            return c.SendString(string(user_data));
+            return user_data, AuthError(Ok);
+
+        } else {
+            return nil, AuthError(WrongCredentialsError);
         }
 
     }
 
-    return nil;
+    return nil, AuthError(UnkownError);
 }
 
 

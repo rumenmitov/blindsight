@@ -25,8 +25,6 @@ type AuthError uint
 const (
     Ok AuthError = iota + 201;
     NotANumberError;
-    VerificationError;
-    DoesNotExistError;
     WrongCredentialsError;
     UnkownError;
 )

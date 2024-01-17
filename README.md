@@ -23,20 +23,33 @@ Receives a **multipart/form-data** with the following fields:
   
 ***
 - `/verify` _POST_
-> Marks user as 'verified' in the database.
+> Marks user as 'verified' in the database. Returns a **JSON of the user object** or an `AuthError` (see below).
   
 Receives a **multipart/form-data** with the following fields:  
 -- `verification_code` _string_
   
+Possible `AuthError` status codes:
+-- `201` - user is verified
+-- `202` - user input is not a number
+-- `203` - credentials are wrong
+-- `204` - unknown error
+  
 ***
 - `/login` _POST_
-> Checks if user has the correct credentials. If they are correct, a **JSON of the user object** is returned.  
+> Checks if user has the correct credentials. If they are correct, a **JSON of the user object** is returned, otherwise an `AuthError`
+is sent (see below).  
    
 Receives a **multipart/form-data** with the following fields:    
 -- `username` _string_  
 -- `password` _string_  
     
 NOTE: `username` accepts either user's email or username.  
+   
+Possible `AuthError` status codes:
+-- `201` - user credentials are correct
+-- `202` - user input is not a number
+-- `203` - credentials are wrong
+-- `204` - unknown error
     
 ***
 - `/images` _POST_  
