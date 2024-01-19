@@ -87,5 +87,9 @@ func main() {
 
 
     app.Listen(":" + os.Getenv("SERVER_PORT"));
+
+    if os.Getenv("ENV") == "prod" {
+        app.ListenTLS(":443", "./ssl/cert.pem", "./ssl/key.pem");
+    }
 }
 
