@@ -86,10 +86,11 @@ func main() {
     });
 
 
-    app.Listen(":" + os.Getenv("SERVER_PORT"));
-
     if os.Getenv("ENV") == "prod" {
         app.ListenTLS(":" + os.Getenv("SERVER_PORT"), "./ssl/cert.pem", "./ssl/key.pem");
+    } else {
+        app.Listen(":" + os.Getenv("SERVER_PORT"));
+
     }
 }
 
