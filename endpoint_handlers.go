@@ -9,7 +9,6 @@ import (
 	"os"
 	"strconv"
 
-	"crypto/tls"
 	"math/rand"
 
 	"github.com/go-gomail/gomail"
@@ -100,9 +99,6 @@ func register(c *fiber.Ctx, db *sql.DB) error {
 
     email_dialer := gomail.NewDialer("smtp.gmail.com", 465, os.Getenv("EMAIL_USER"), os.Getenv("EMAIL_PASS"));
 
-    // TODO: Once SSL certificate ready, remove this line
-    email_dialer.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-
     if err := email_dialer.DialAndSend(verification_mes); err != nil {
         return err;
     }
@@ -137,7 +133,6 @@ func verify(c *fiber.Ctx, db *sql.DB) ([]byte, AuthError) {
             return nil, AuthError(UnkownError);
         }
 
-        Log(string(userJSON));
         return userJSON, AuthError(Ok);
 
     }
