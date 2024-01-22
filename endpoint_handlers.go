@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"strconv"
 
 	"math/rand"
@@ -65,7 +66,8 @@ func register(c *fiber.Ctx, db *sql.DB) error {
         return err;
     }
 
-    verification_code := rand.Intn(999999);
+    // NOTE: For uniformity, all verification codes should be 6-digit
+    verification_code := rand.Intn(899999) + 100000;
 
     register_user := `INSERT INTO "Users"("fname", "lname", "email", "username", "password", "verification_code", "verified") 
         VALUES($1, $2, $3, $4, $5, $6, $7)`;
@@ -203,16 +205,20 @@ func saveImage(c *fiber.Ctx) error {
         return errors.New("Couldn't decode file!\n");
     }
 
-    _, err = os.Stat("images/");
+    const input_dir = "/MiDaS/input/";
+    const output_dir = "/MiDaS/output/";
+    const model = "dpt_swin2_tiny_256";
+
+    _, err = os.Stat(input_dir);
     if err != nil {
         if os.IsNotExist(err) {
-            os.Mkdir("images", os.ModePerm);
+            os.Mkdir(input_dir, os.ModePerm);
         } else {
             return err;
         }
     }
 
-    file, err := os.Create("images/" + image.name + ".png");
+    file, err := os.Create(input_dir + image.name + ".png");
     if err != nil {
         return errors.New("Couldn't create file!\n");
     }
@@ -227,6 +233,13 @@ func saveImage(c *fiber.Ctx) error {
     err = file.Sync();
     if err != nil {
         return errors.New("Couldn't sync file to disk!\n");
+    }
+
+    depth_model_command := "python run.py --model_type " + model + " --input_path " + input_dir + " --output_path " + output_dir;
+    cmd := exec.Command(depth_model_command);
+
+    if err := cmd.Run(); err != nil {
+        return err;
     }
 
     return nil;
