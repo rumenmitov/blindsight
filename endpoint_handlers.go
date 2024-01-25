@@ -242,5 +242,12 @@ func saveImage(c *fiber.Ctx) error {
         return err;
     }
 
-    return nil;
+    os.Remove(input_dir + image.name + ".png");
+
+    instruction, err := exec.Command("depth_analyzer", output_dir + image.name + ".png").Output();
+    if err != nil {
+        return err;
+    }
+
+    return c.SendString(string(instruction));
 }
