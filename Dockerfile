@@ -32,6 +32,8 @@ RUN cargo install depth_analyzer
 
 RUN apt-get install -y python3 python3-pip
 
+RUN pip install conda
+
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
 
 RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda 
