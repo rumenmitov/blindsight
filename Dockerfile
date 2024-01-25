@@ -35,14 +35,6 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 
 ENV PATH=/opt/conda/bin:$PATH
 
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
-
-RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda 
-
-RUN rm Miniconda3-latest-Linux-x86_64.sh
-
-ENV PATH="/home/username/miniconda/bin:$PATH"
-
 RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
 
 RUN wget -O /MiDaS/weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDaS/releases/download/v3_1/dpt_swin2_tiny_256.pt
