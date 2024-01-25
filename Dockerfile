@@ -6,7 +6,7 @@ FROM ubuntu:latest
 
 WORKDIR /app
 
-RUN apt update && apt install -y wget git
+RUN apt update && apt install -y wget git curl
 
 #--------------#
 # Setup golang #
