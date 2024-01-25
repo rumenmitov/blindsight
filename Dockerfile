@@ -41,9 +41,7 @@ RUN wget -O /MiDaS/weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDa
 
 WORKDIR /MiDaS
 
-RUN conda env create -f environment.yaml
-
-RUN conda activate midas-py310
+RUN conda env create -f environment.yaml && conda activate midas-py310
 
 WORKDIR /app
 
