@@ -6,7 +6,7 @@ FROM ubuntu:latest
 
 WORKDIR /app
 
-RUN apt update && apt install -y wget git curl
+RUN apt update && apt install -y wget git curl cargo
 
 #--------------#
 # Setup golang #
@@ -23,10 +23,6 @@ ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 #----------------------#
 # Setup depth_analyzer #
 #----------------------#
-
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-
-ENV PATH="/root/.cargo/bin:$PATH"
 
 RUN cargo install depth_analyzer
 
