@@ -30,9 +30,10 @@ RUN cargo install depth_analyzer
 # Setup MiDaS #
 #-------------#
 
-RUN apt-get install -y python3 python3-pip
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda
 
-RUN pip install conda
+ENV PATH=/opt/conda/bin:$PATH
 
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh 
 
