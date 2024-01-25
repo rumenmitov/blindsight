@@ -39,9 +39,13 @@ RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
 
 RUN wget -O /MiDaS/weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDaS/releases/download/v3_1/dpt_swin2_tiny_256.pt
 
+RUN cd /MiDaS
+
 RUN conda env create -f environment.yaml
 
 RUN conda activate midas-py310
+
+RUN cd -
 
 #--------------#
 # Start server #
