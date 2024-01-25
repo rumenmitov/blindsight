@@ -43,7 +43,7 @@ WORKDIR /MiDaS
 
 RUN conda env create -f environment.yaml
 
-RUN source activate midas-py310
+RUN conda activate midas-py310
 
 WORKDIR /app
 
