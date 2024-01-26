@@ -2,13 +2,13 @@
 # Setup server image #
 #--------------------#
 
-FROM arch:latest
+FROM docker.io/archlinux
 
 WORKDIR /app
 
 COPY . .
 
-RUN pacman -Sy wget git curl cargo
+RUN pacman -Syyu wget git curl cargo
 
 #--------------#
 # Setup golang #
