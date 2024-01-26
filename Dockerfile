@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN pacman -Syyu wget git curl cargo
+RUN pacman -Syu wget git curl cargo
 
 #--------------#
 # Setup golang #
