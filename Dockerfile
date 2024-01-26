@@ -45,6 +45,8 @@ WORKDIR /MiDaS
 
 RUN chmod +x model_init.sh && ./model_init.sh
 
+RUN conda activate midas-py310
+
 WORKDIR /app
 
 #--------------#
