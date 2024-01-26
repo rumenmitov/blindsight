@@ -31,17 +31,19 @@ RUN cargo install depth_analyzer
 #-------------#
 
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda
+/bin/bash ~/miniconda.sh -b -p /opt/conda
 
 ENV PATH=/opt/conda/bin:$PATH
 
 RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
 
-RUN wget -O /MiDaS/weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDaS/releases/download/v3_1/dpt_swin2_tiny_256.pt
+RUN chmod +x model_init.sh
+
+COPY model_init /MiDaS
 
 WORKDIR /MiDaS
 
-RUN conda env create -f environment.yaml && conda init && conda activate midas-py310
+RUN ./model_init.sh
 
 WORKDIR /app
 
