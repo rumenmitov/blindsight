@@ -6,6 +6,8 @@ FROM ubuntu:latest
 
 WORKDIR /app
 
+COPY . .
+
 RUN apt update && apt install -y wget git curl cargo
 
 #--------------#
@@ -50,8 +52,6 @@ WORKDIR /app
 #--------------#
 # Start server #
 #--------------#
-
-COPY . .
 
 RUN chmod +x runMiDaS.sh
 
