@@ -39,7 +39,7 @@ RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
 
 RUN chmod +x model_init.sh
 
-COPY model_init /MiDaS
+COPY model_init.sh /MiDaS
 
 WORKDIR /MiDaS
 
