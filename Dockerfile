@@ -39,13 +39,11 @@ ENV PATH=/opt/conda/bin:$PATH
 
 RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
 
-RUN chmod +x model_init.sh
-
 COPY model_init.sh /MiDaS
 
 WORKDIR /MiDaS
 
-RUN ./model_init.sh
+RUN chmod +x model_init.sh && ./model_init.sh
 
 WORKDIR /app
 
