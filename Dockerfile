@@ -39,13 +39,16 @@ ENV PATH=/opt/conda/bin:$PATH
 
 RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
 
-COPY model_init.sh /MiDaS
-
 WORKDIR /MiDaS
 
-RUN chmod +x model_init.sh && ./model_init.sh
+RUN wget -O /MiDaS/weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDaS/releases/download/v3_1/dpt_swin2_tiny_256.pt
 
-RUN conda activate midas-py310
+RUN /bin/bash -c "\
+    /opt/conda/bin/conda init bash && \
+    echo '. /opt/conda/etc/profile.d/conda.sh' >> ~/.bashrc && \
+    source ~/.bashrc && \
+    conda env create -f environment.yaml && \
+    conda activate midas-py310"
 
 WORKDIR /app
 
