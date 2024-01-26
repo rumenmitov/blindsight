@@ -28,30 +28,6 @@ ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
 RUN cargo install depth_analyzer
 
-#-------------#
-# Setup MiDaS #
-#-------------#
-
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-/bin/bash ~/miniconda.sh -b -p /opt/conda
-
-ENV PATH=/opt/conda/bin:$PATH
-
-RUN git clone https://github.com/isl-org/MiDaS.git /MiDaS
-
-WORKDIR /MiDaS
-
-RUN wget -O /MiDaS/weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDaS/releases/download/v3_1/dpt_swin2_tiny_256.pt
-
-RUN /bin/bash -c "\
-    /opt/conda/bin/conda init bash && \
-    echo '. /opt/conda/etc/profile.d/conda.sh' >> ~/.bashrc && \
-    source ~/.bashrc && \
-    conda env create -f environment.yaml && \
-    conda activate midas-py310"
-
-WORKDIR /app
-
 #--------------#
 # Start server #
 #--------------#
