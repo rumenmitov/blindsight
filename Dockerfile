@@ -8,13 +8,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN pacman -Syu wget git curl cargo
+RUN pacman -Syu
 
-#--------------#
-# Setup golang #
-#--------------#
-
-RUN pacman -Sy go
+RUN pacman -S wget git curl cargo go
 
 #----------------------#
 # Setup depth_analyzer #
