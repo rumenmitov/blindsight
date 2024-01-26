@@ -2,25 +2,19 @@
 # Setup server image #
 #--------------------#
 
-FROM ubuntu:latest
+FROM arch:latest
 
 WORKDIR /app
 
 COPY . .
 
-RUN apt update && apt install -y wget git curl cargo
+RUN pacman -Sy wget git curl cargo
 
 #--------------#
 # Setup golang #
 #--------------#
 
-RUN wget https://dl.google.com/go/go1.16.5.linux-amd64.tar.gz && tar -xvf go1.16.5.linux-amd64.tar.gz && mv go /usr/local
-
-ENV GOROOT=/usr/local/go
-
-ENV GOPATH=$HOME/go
-
-ENV PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+RUN pacman -Sy go
 
 #----------------------#
 # Setup depth_analyzer #
