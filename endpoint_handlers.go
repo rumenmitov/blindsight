@@ -207,7 +207,7 @@ func saveImage(c *fiber.Ctx) error {
 
     const input_dir = "/MiDaS/input/";
     const output_dir = "/MiDaS/output/";
-    const model = "dpt_swin2_tiny_256.pt";
+    const model = "/MiDaS/weights/dpt_swin2_tiny_256.pt";
 
     _, err = os.Stat(input_dir);
     if err != nil {
