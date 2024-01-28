@@ -52,8 +52,8 @@ Possible `AuthError` status codes:
 -- `204` - unknown error
     
 ***
-- `/images` _POST_  
-> Decodes `image` and saves to **images** directory as a **PNG**.    
+- `/image` _POST_  
+> Decodes `image`, analyzes it and sends an instruction back.    
   
 Receives a **multipart/form-data** with the following fields:  
 -- `name` _string_  
