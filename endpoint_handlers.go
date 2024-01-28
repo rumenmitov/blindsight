@@ -235,7 +235,7 @@ func saveImage(c *fiber.Ctx) error {
         return errors.New("Couldn't sync file to disk!\n");
     }
 
-    depth_model_command := "python run.py --model_type " + model + " --input_path " + input_dir + " --output_path " + output_dir;
+    depth_model_command := "python /MiDaS/run.py --model_type " + model + " --input_path " + input_dir + " --output_path " + output_dir;
     cmd := exec.Command(depth_model_command);
 
     if err := cmd.Run(); err != nil {
