@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"time"
 
 	"math/rand"
 
@@ -194,7 +195,7 @@ func login(c *fiber.Ctx, db *sql.DB) ([]byte, AuthError) {
 }
 
 
-func saveImage(c *fiber.Ctx) error {
+func saveImage(c *fiber.Ctx) ([]byte, error) {
     image := ImageFile {
         name: c.FormValue("name"),
         bytes: c.FormValue("image"),
@@ -202,54 +203,49 @@ func saveImage(c *fiber.Ctx) error {
 
     dec, err := base64.StdEncoding.DecodeString(image.bytes);
     if err != nil {
-        return errors.New("Couldn't decode file!\n");
+        return nil, errors.New("Couldn't decode file!\n");
     }
 
-    const input_dir = "/MiDaS/input/";
-    const output_dir = "/MiDaS/output/";
-    const model = "/MiDaS/weights/dpt_swin2_tiny_256.pt";
+    const input_dir = "/midas/input/";
+    const output_dir = "/midas/output/";
+    const model = "dpt_swin2_tiny_256";
+    const model_path = "/midas/weights/dpt_swin2_tiny_256.pt";
 
     _, err = os.Stat(input_dir);
     if err != nil {
         if os.IsNotExist(err) {
             os.Mkdir(input_dir, os.ModePerm);
         } else {
-            return err;
+            return nil, err;
         }
     }
 
     file, err := os.Create(input_dir + image.name + ".png");
     if err != nil {
-        return errors.New("Couldn't create file!\n");
+        return nil, errors.New("Couldn't create file! \n");
     }
 
     defer file.Close();
 
     _, err = file.Write(dec);
     if err != nil {
-        return errors.New("Couldn't write to file!\n");
+        return nil, errors.New("Couldn't write to file!\n");
     }
 
     err = file.Sync();
     if err != nil {
-        return errors.New("Couldn't sync file to disk!\n");
+        return nil, errors.New("Couldn't sync file to disk!\n");
     }
 
-    depth_model_command := "python /MiDaS/run.py --model_type " + model + " --input_path " + input_dir + " --output_path " + output_dir;
-    cmd := exec.Command(depth_model_command);
+    time.Sleep(time.Millisecond * 1500);
 
-    if err := cmd.Run(); err != nil {
-        return err;
-    }
+    defer os.Remove(output_dir + image.name + "-" + model + ".png");
 
-    os.Remove(input_dir + image.name + ".png");
-
-    instruction, err := exec.Command("depth_analyzer", output_dir + image.name + ".png").Output();
+    instruction, err := exec.Command("depth_analyzer", output_dir + image.name + "-" + model + ".png").Output();
     if err != nil {
-        return err;
+        return nil, err;
     }
 
-    os.Remove(output_dir + image.name + ".png");
 
-    return c.SendString(string(instruction));
+    return instruction, nil;
 }

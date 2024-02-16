@@ -82,7 +82,13 @@ func main() {
     });
 
     app.Post("/image", func(c *fiber.Ctx) error {
-        return saveImage(c);
+        response, err := saveImage(c);
+        if err != nil {
+            Log(err.Error());
+            return c.SendString("Server Error: " + err.Error());
+        }
+
+        return c.SendString(string(response));
     });
 
 
