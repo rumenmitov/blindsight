@@ -53,12 +53,18 @@ Possible `AuthError` status codes:
     
 ***
 - `/image` _POST_  
-> Decodes `image`, analyzes it and sends an instruction back.    
+> Decodes `image`, analyzes it and sends an instruction **string** back.    
   
 Receives a **multipart/form-data** with the following fields:  
 -- `name` _string_  
 -- `image` _string_    
   
 NOTE: `image` must be **base 64 encoded**.
+
+Possible instructions that can be returned:
+-- `FORWARD`
+-- `RIGHT`
+-- `LEFT`
+-- `STOP`
   
 
